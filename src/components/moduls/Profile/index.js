@@ -1,14 +1,18 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import { Box, Stack, Avatar, Typography, SvgIcon, Button, IconButton } from '@mui/material'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import FolderIcon from '@mui/icons-material/Folder'
 import { ReactComponent as ImageIcon } from '../../../icons/image.svg'
 import { ReactComponent as DocumentIcon } from '../../../icons/document.svg'
 import { ReactComponent as OtherIcon } from '../../../icons/other.svg'
-import { getAuth } from "firebase/auth";
+import { getAuth } from 'firebase/auth';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
+import Toast from '../../elements/toast/toast'
 
 function Profile() {
     const auth = getAuth().currentUser
+    const fileOpenRef = useRef()
+    const [showProgressAlert, setShowProgressAlert] = useState({ open: false, value: '' })
 
     function stringToColor(string) {
         let i, hash = 0;
@@ -24,7 +28,27 @@ function Profile() {
         }
         return color;
     }
-
+    function handleUploadPhoto(e) {
+        const storage = getStorage()
+        const storageRef = ref(storage, 'profile-images/image')
+        const uploadTask = uploadBytesResumable(storageRef, e.target.files[0])
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                setShowProgressAlert({ open: true, value: progress })
+            },
+            (error) => {
+                console.log(error)
+            },
+            (res) => {
+                console.log('res', res)
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                });
+            }
+        )
+    }
     return (
         <Box className='h-screen  pr-4' style={{ width: 354, paddingTop: 33, paddingLeft: 17, border: '1px solid #F0F0F0' }}>
             <Stack direction='row' justifyContent='start' alignItems='center'>
@@ -33,7 +57,22 @@ function Profile() {
                 </Avatar>
                 <Box className='ml-3'>
                     <Typography variant='h5' fontWeight={500}>Hi, {auth.displayName.split(' ')[0]} </Typography>
-                    <Typography variant='caption' color='rgba(0, 0, 0, 0.45)' className='cursor-pointer'>Profile Setting</Typography>
+                    <Typography
+                        variant='caption'
+                        color='rgba(0, 0, 0, 0.45)'
+                        className='cursor-pointer'
+                        onClick={() => {
+                            fileOpenRef.current.click()
+                        }}
+                    >
+                        Profile Setting
+                    </Typography>
+                    {/* <input
+                        ref={fileOpenRef}
+                        type='file'
+                        accept='image/*'
+                        onChange={handleUploadPhoto}
+                    /> */}
                 </Box>
             </Stack >
             <Box sx={{ marginTop: '25px', marginBottom: '41px' }}>
@@ -126,6 +165,12 @@ function Profile() {
                     </Typography>
                 </Box>
             </Box>
+            <Toast
+                open={showProgressAlert.open}
+                onClose={() => setShowProgressAlert({ open: false, value: '' })}
+                message={showProgressAlert.value}
+                type='info'
+            />
         </Box >
     )
 }
