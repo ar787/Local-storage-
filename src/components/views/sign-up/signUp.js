@@ -13,7 +13,6 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { auth } from '../../../firebase-config/firebase-config'
 
-
 const CreateAccountButton = styled(Button)({
     textTransform: 'capitalize',
     borderRadius: 9,
@@ -75,6 +74,7 @@ function SignUp() {
 
     async function createAccount() {
         try {
+            localStorage.setItem('username', userInfo.userName.value)
             await createUserWithEmailAndPassword(auth, userInfo.email.value, userInfo.password.value)
         } catch (e) {
             const setStateByErrorCode = e.code === 'auth/weak-password' ? 'password' : 'email'
