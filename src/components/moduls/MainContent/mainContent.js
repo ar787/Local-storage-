@@ -3,7 +3,7 @@ import Header from '../Header'
 import { Box, Stack, CircularProgress } from '@mui/material'
 import FolderCard from '../../elements/FolderCard/folderCard'
 import { collection, getDocs, where, query } from 'firebase/firestore'
-import { db } from '../../../firebase-config/firebase-config'
+import { db, auth } from '../../../firebase-config/firebase-config'
 import { useHistory, useLocation } from 'react-router-dom'
 
 function Content() {
@@ -14,8 +14,9 @@ function Content() {
 
     async function getData(parentId) {
         const res = []
-        const q = query(collection(db, 'main'), where('parentId', '==', String(parentId)))
-        const querySnapshot = await getDocs(q)
+        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(parentId)))
+        const querySnapshot = (await getDocs(q))
+
         querySnapshot.forEach(doc => {
             res.push({ id: doc.id, ...doc.data() })
         })
@@ -23,13 +24,22 @@ function Content() {
     }
 
     async function getFolderItemsCount(parentId) {
-        const q = query(collection(db, 'main'), where('parentId', '==', String(parentId)))
+        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(parentId)))
         const querySnapshotCount = (await getDocs(q)).size
+
         return querySnapshotCount
     }
 
+    async function onFolderClick(id) {
+        await getData(id)
+        history.push({
+            pathname: location.pathname,
+            search: 'id=' + id
+        })
+    }
+
     useEffect(() => {
-        const search = new URLSearchParams(location.search).get('id')
+        const search = new URLSearchParams(location.search).get('id') ?? '/'
         setLoading(true)
         getData(search).then(res => {
             const promises = res.map(async (doc) => {
@@ -63,14 +73,7 @@ function Content() {
                                         style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)' }}
                                         text={item.name}
                                         itemsLength={item.itemsCount}
-                                        onClick={() => {
-                                            getData(item.id).then(() => {
-                                                history.push({
-                                                    pathname: location.pathname,
-                                                    search: 'id=' + item.id
-                                                })
-                                            })
-                                        }}
+                                        onClick={() => onFolderClick(item.id)}
                                     />
                                 })
                             }

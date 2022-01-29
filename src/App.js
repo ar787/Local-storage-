@@ -5,7 +5,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import SignUp from './components/views/sign-up/signUp'
 import SignIn from './components/views/sign-in/siginIn'
 import DashBoard from './components/views/dash-board/DashBoard'
-import { onAuthStateChanged, updateProfile } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './firebase-config/firebase-config'
 import LoadingPage from './components/elements/loading-page/loadingPage'
 
@@ -19,13 +19,8 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
-        const displayName = localStorage.getItem('username')
-        updateProfile(user, {
-          displayName,
-        }).then(() => {
-          setAuthenticated(true)
-          setLoading(false)
-        })
+        setAuthenticated(true)
+        setLoading(false)
       } else {
         setAuthenticated(false)
         setLoading(false)
@@ -35,8 +30,6 @@ function App() {
   }, [])
 
   return (
-
-
     loading ? <LoadingPage /> : (
       <TransitionGroup>
         <CSSTransition

@@ -11,7 +11,8 @@ import { Link } from 'react-router-dom';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { ReactComponent as CustomGoogleIcon } from '../../../icons/google.svg';
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../../firebase-config/firebase-config'
+import { collection, setDoc, doc, getDocs, where, query, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../../firebase-config/firebase-config'
 import Toast from '../../elements/toast/toast';
 
 const CreateAccountButton = styled(Button)({
@@ -67,9 +68,21 @@ function SignIn() {
     async function signInWithGoogle() {
         try {
             const provider = new GoogleAuthProvider()
-            const googleAuthProviderCredential = await signInWithPopup(auth, provider)
-            const credential = GoogleAuthProvider.credentialFromResult(googleAuthProviderCredential)
-            console.log('Google credential', credential)
+            const { user } = await signInWithPopup(auth, provider)
+            // const credential = GoogleAuthProvider.credentialFromResult(googleAuthProviderCredential)
+            // console.log(credential.providerId);
+            // const uid = googleAuthProviderCredential.user.uid
+            const hasDocumentExists = (await getDoc(doc(db, 'main', user.uid))).exists()
+
+            if (hasDocumentExists === false) {
+                await setDoc(doc(collection(db, 'main'), user.uid), {
+                    uid: user.uid,
+                })
+                await setDoc(doc(collection(db, `main/${user.uid}/folders`)), {
+                    parentId: '/',
+                    name: 'untitled',
+                })
+            }
         } catch (err) {
             console.log(err.message)
             setShowErrorMessage({ open: true, message: 'Something went wrong', type: 'error' })
@@ -89,8 +102,8 @@ function SignIn() {
     }
     async function loginAccount() {
         try {
-            console.log(userInfo);
             await signInWithEmailAndPassword(auth, userInfo.email.value, userInfo.password.value)
+
         } catch (e) {
             console.log(e.message);
             const setStateByErrorCode = e.code === 'auth/wrong-password' ? 'password' : 'email'

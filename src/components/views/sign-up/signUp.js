@@ -9,9 +9,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-
-import { auth } from '../../../firebase-config/firebase-config'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { collection, setDoc, doc } from 'firebase/firestore';
+import { auth, db } from '../../../firebase-config/firebase-config'
 
 const CreateAccountButton = styled(Button)({
     textTransform: 'capitalize',
@@ -75,7 +75,20 @@ function SignUp() {
     async function createAccount() {
         try {
             localStorage.setItem('username', userInfo.userName.value)
-            await createUserWithEmailAndPassword(auth, userInfo.email.value, userInfo.password.value)
+            const { user } = await createUserWithEmailAndPassword(auth, userInfo.email.value, userInfo.password.value)
+            await updateProfile(user, {
+                displayName: userInfo.userName.value,
+            })
+
+            await setDoc(doc(collection(db, 'main'), user.uid), {
+                uid: user.uid,
+            })
+            await setDoc(doc(collection(db, `main/${user.uid}/folders`)), {
+                parentId: '/',
+                name: 'untitled',
+            })
+
+
         } catch (e) {
             const setStateByErrorCode = e.code === 'auth/weak-password' ? 'password' : 'email'
             setUserInfo(prev => ({
