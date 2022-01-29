@@ -1,14 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Alert, Snackbar } from '@mui/material';
-// import PropTypes from 'prop-types';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
+import { Alert, Snackbar } from '@mui/material'
 
-function Toast(props) {
+function Toast({ open, message, onClose, type }) {
     return (
         ReactDOM.createPortal(
             <Snackbar
-                open={props.open}
-                onClose={props.onClose}
+                open={open}
+                onClose={onClose}
                 autoHideDuration={7000}
                 anchorOrigin={{
                     vertical: 'top',
@@ -16,15 +16,24 @@ function Toast(props) {
                 }}
                 message="Note archived"
             >
-                <Alert onClose={props.onClose} severity={props.type} sx={{ width: '100%' }}>{props.message}</Alert>
+                <Alert onClose={onClose} severity={type} sx={{ width: '100%' }}>{message}</Alert>
             </Snackbar>
-            , document.getElementById('portal-root'))
+            , document.getElementById('modal-root'))
     )
 }
+
+Toast.propTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    message: PropTypes.string,
+    type: PropTypes.string,
+}
+
+Toast.defaultProps = {
+    open: false,
+    onClose: () => { },
+    message: '',
+    type: '',
+}
+
 export default Toast
-// Toast.propTypes = {
-//     open: PropTypes.bool,
-//     onclose: PropTypes.func,
-//     autoHideDuration: PropTypes.number,
-//     anchorOrigin: PropTypes.object
-// }

@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { ReactComponent as CustomGoogleIcon } from '../../../icons/google.svg';
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, setDoc, doc, getDocs, where, query, getDoc } from 'firebase/firestore';
+import { collection, setDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../../firebase-config/firebase-config'
 import Toast from '../../elements/toast/toast';
 
@@ -103,7 +103,6 @@ function SignIn() {
     async function loginAccount() {
         try {
             await signInWithEmailAndPassword(auth, userInfo.email.value, userInfo.password.value)
-
         } catch (e) {
             console.log(e.message);
             const setStateByErrorCode = e.code === 'auth/wrong-password' ? 'password' : 'email'
