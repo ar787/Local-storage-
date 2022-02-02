@@ -1,12 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Button, Stack, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined'
+import { BasicFormModal } from '../modals/index'
+import { addDoc, collection, doc } from 'firebase/firestore'
+import { db, auth } from '../../../firebase-config/firebase-config'
+import { useLocation } from 'react-router-dom'
 
 function Header({ style }) {
+    const [openCreateFolderModal, setCreateFolderModal] = useState(false)
+    const location = useLocation()
+    async function createFolder(value) {
+        await addDoc(collection(db, 'main', auth.currentUser.uid, 'folders'), {
+            parentId: new URLSearchParams(location.search).get('id') ?? '/',
+            name: value,
+        })
+    }
     return (
         <Box style={style}>
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -14,6 +26,7 @@ function Header({ style }) {
                 <Button
                     variant='contained'
                     size='large'
+                    onClick={() => setCreateFolderModal(true)}
                     startIcon={<AddIcon />}
                     sx={{
                         textTransform: 'none',
@@ -45,6 +58,13 @@ function Header({ style }) {
                     </IconButton>
                 </Box>
             </Stack>
+            <BasicFormModal
+                open={openCreateFolderModal}
+                onClose={() => setCreateFolderModal(false)}
+                title='New folder'
+                autoFocus
+                onSubmit={createFolder}
+            />
         </Box >
     )
 }
