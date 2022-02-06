@@ -15,12 +15,6 @@ function Profile() {
     const userDisplayName = currentUser.displayName ?? localStorage.getItem('username')
     // const [showProgressAlert, setShowProgressAlert] = useState({ open: false, value: '' })
     function displayName(string) {
-        // if (string === null) {
-        //     return {
-        //         firstName: [''],
-        //         lastName: [''],
-        //     }
-        // }
         const fullName = string.split(' ')
         return {
             firstName: fullName[0],
@@ -28,7 +22,6 @@ function Profile() {
         }
     }
     function stringToColor(string) {
-        // console.log('currentUser', string);
         let i, hash = 0;
         for (i = 0; i < string.length; i += 1) {
             hash = string.charCodeAt(i) + ((hash << 5) - hash);

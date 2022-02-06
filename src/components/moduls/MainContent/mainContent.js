@@ -70,7 +70,6 @@ function Content() {
                             <CircularProgress />
                         </Box>
                     ) : (
-                        // <Stack direction='row' justifyContent='start' whiteSpace='pre-wrap'>
                         <Box className='flex flex-wrap'>
                             {
                                 data.map(item => {
@@ -85,7 +84,6 @@ function Content() {
                                 })
                             }
                         </Box>
-                        // </Stack>
                     )
                 }
             </Box>

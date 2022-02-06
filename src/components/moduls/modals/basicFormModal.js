@@ -26,17 +26,24 @@ const style = {
 
 function BasicFormModal({ open, onClose, title, autoFocus, onSubmit }) {
     const [value, setValue] = useState('')
+
+    function onclose() {
+        onClose()
+        setValue('')
+    }
+
     async function onHandleSubmit(value) {
         try {
             await onSubmit(value)
-            onClose()
+            onclose()
         } catch (error) {
             console.log('BasicFormModal', error)
         }
     }
+
     return (
         ReactDOM.createPortal(
-            <Modal open={open} onClose={onClose}>
+            <Modal open={open} onClose={onclose}>
                 <Fade in={open}>
                     <Box sx={style} className='w-96 px-5 pt-6 rounded-lg'>
                         <Typography
