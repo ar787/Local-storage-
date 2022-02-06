@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React from 'react'
 import { Box, Stack, Avatar, Typography, SvgIcon, Button, IconButton } from '@mui/material'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import FolderIcon from '@mui/icons-material/Folder'
@@ -11,7 +11,7 @@ import { getAuth, signOut } from 'firebase/auth';
 
 function Profile() {
     const currentUser = getAuth().currentUser
-    const fileOpenRef = useRef()
+    // const fileOpenRef = useRef()
     const userDisplayName = currentUser.displayName ?? localStorage.getItem('username')
     // const [showProgressAlert, setShowProgressAlert] = useState({ open: false, value: '' })
     function displayName(string) {
@@ -65,7 +65,7 @@ function Profile() {
     // }
 
     return (
-        <Box className='h-screen  pr-4' style={{ width: 354, paddingTop: 33, paddingLeft: 17, border: '1px solid #F0F0F0' }}>
+        <Box className='h-screen fixed top-0 right-0 pr-4' style={{ width: 400, paddingTop: 33, paddingLeft: 17, border: '1px solid #F0F0F0' }}>
             <Stack direction='row' justifyContent='start' alignItems='center'>
                 <Avatar sx={{ width: 64, height: 64, bgcolor: stringToColor(userDisplayName) }}>
                     {displayName(userDisplayName).firstName[0] + displayName(userDisplayName).lastName[0]}

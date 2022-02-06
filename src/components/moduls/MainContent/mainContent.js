@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../Header'
-import { Box, Stack, CircularProgress } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import FolderCard from '../../elements/FolderCard/folderCard'
-import { collection, getDocs, where, query } from 'firebase/firestore'
+import { collection, getDocs, where, query, onSnapshot } from 'firebase/firestore'
 import { db, auth } from '../../../firebase-config/firebase-config'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -13,9 +13,10 @@ function Content() {
     const [loading, setLoading] = useState(false)
 
     async function getData(parentId) {
-        const res = []
+
         const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(parentId)))
         const querySnapshot = (await getDocs(q))
+        const res = []
 
         querySnapshot.forEach(doc => {
             res.push({ id: doc.id, ...doc.data() })
@@ -41,21 +42,26 @@ function Content() {
     useEffect(() => {
         const search = new URLSearchParams(location.search).get('id') ?? '/'
         setLoading(true)
-        getData(search).then(res => {
-            const promises = res.map(async (doc) => {
-                const itemsCount = await getFolderItemsCount(doc.id)
-                return { ...doc, itemsCount }
 
+        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(search)))
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const promises = querySnapshot.docs.map(async doc => {
+                const itemsCount = await getFolderItemsCount(doc.id)
+                return { id: doc.id, itemsCount, ...doc.data() }
             })
             Promise.all(promises).then(res => {
                 setData(res)
                 setLoading(false)
             })
         })
+
+        return unsubscribe
+
     }, [location.search])
 
     return (
-        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', flexGrow: '1' }}>
+        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', width: 'calc(100vw - 400px - 236px)' }}>
             <Header style={{ paddingTop: 33 }} />
             <Box className='mt-8'>
                 {
@@ -64,12 +70,13 @@ function Content() {
                             <CircularProgress />
                         </Box>
                     ) : (
-                        <Stack direction='row' justifyContent='start' >
+                        // <Stack direction='row' justifyContent='start' whiteSpace='pre-wrap'>
+                        <Box className='flex flex-wrap'>
                             {
                                 data.map(item => {
                                     return <FolderCard
                                         key={item.id}
-                                        className='mx-4 bg-white pt-6 px-11 pb-3 rounded-lg cursor-pointer hover:bg-gray-50 transition'
+                                        className='m-4 bg-white pt-6 px-11 pb-3 rounded-lg cursor-pointer hover:bg-gray-50 transition'
                                         style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)' }}
                                         text={item.name}
                                         itemsLength={item.itemsCount}
@@ -77,7 +84,8 @@ function Content() {
                                     />
                                 })
                             }
-                        </Stack>
+                        </Box>
+                        // </Stack>
                     )
                 }
             </Box>
