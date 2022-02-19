@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined'
 import { BasicFormModal } from '../modals/index'
-import { addDoc, collection, Timestamp } from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../../../firebase-config/firebase-config'
 import { useLocation } from 'react-router-dom'
 
@@ -17,7 +17,7 @@ function Header({ style }) {
         await addDoc(collection(db, 'main', auth.currentUser.uid, 'folders'), {
             parentId: new URLSearchParams(location.search).get('id') ?? '/',
             name: value,
-            createdAt: Timestamp.now(),
+            createdAt: serverTimestamp(),
         })
     }
     return (

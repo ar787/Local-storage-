@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../Header'
-import { Box, CircularProgress } from '@mui/material'
-import FolderCard from '../../elements/FolderCard/folderCard'
-import { collection, getDocs, where, query, onSnapshot } from 'firebase/firestore'
-import { db, auth } from '../../../firebase-config/firebase-config'
 import { useHistory, useLocation } from 'react-router-dom'
+import { db, auth } from '../../../firebase-config/firebase-config'
+import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
+import { Box, CircularProgress } from '@mui/material'
+
+import FolderCard from '../../elements/FolderCard/folderCard'
+import Header from '../Header'
 
 function Content() {
     const history = useHistory()
@@ -12,38 +13,29 @@ function Content() {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
 
-    async function getData(parentId) {
-
-        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(parentId)))
-        const querySnapshot = (await getDocs(q))
-        const res = []
-
-        querySnapshot.forEach(doc => {
-            res.push({ id: doc.id, ...doc.data() })
-        })
-        return res
-    }
-
     async function getFolderItemsCount(parentId) {
-        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(parentId)))
+        const q = query(
+            collection(db, `main/${auth.currentUser.uid}/folders`),
+            orderBy('createdAt', 'asc'),
+            where('parentId', '==', String(parentId))
+        )
         const querySnapshotCount = (await getDocs(q)).size
 
         return querySnapshotCount
     }
 
-    async function onFolderClick(id) {
-        await getData(id)
+    function onFolderClick(id) {
         history.push({
             pathname: location.pathname,
-            search: 'id=' + id
+            search: `id=${id}`,
         })
     }
 
     useEffect(() => {
-        const search = new URLSearchParams(location.search).get('id') ?? '/'
+        const urlSearchParams = new URLSearchParams(location.search)
+        const parentId = urlSearchParams.get('id') ?? '/'
         setLoading(true)
-
-        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), where('parentId', '==', String(search)))
+        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), orderBy('createdAt', 'asc'), where('parentId', '==', String(parentId)))
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const promises = querySnapshot.docs.map(async doc => {
@@ -65,11 +57,14 @@ function Content() {
             <Header style={{ paddingTop: 33 }} />
             <Box className='mt-8'>
                 {
-                    loading ? (
+                    loading && (
                         <Box className='flex justify-center items-center' sx={{ height: 'calc(100vh - 157.35px - 18px - 33px)' }}>
                             <CircularProgress />
                         </Box>
-                    ) : (
+                    )
+                }
+                {
+                    loading === false && (
                         <Box className='flex flex-wrap'>
                             {
                                 data.map(item => {
