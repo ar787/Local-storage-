@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 import { Box, Button, Stack, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
@@ -8,18 +9,19 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { BasicFormModal } from '../modals/index'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../../../firebase-config/firebase-config'
-import { useLocation } from 'react-router-dom'
 
 function Header({ style }) {
+    const params = useParams()
     const [openCreateFolderModal, setCreateFolderModal] = useState(false)
-    const location = useLocation()
+
     async function createFolder(value) {
         await addDoc(collection(db, 'main', auth.currentUser.uid, 'folders'), {
-            parentId: new URLSearchParams(location.search).get('id') ?? '/',
+            parentId: params.id ?? 'root',
             name: value,
             createdAt: serverTimestamp(),
         })
     }
+
     return (
         <Box style={style}>
             <Stack direction='row' justifyContent='space-between' alignItems='center'>

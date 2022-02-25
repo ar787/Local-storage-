@@ -5,7 +5,7 @@ function PublicRoute({ component: Component, isAuthenticated, ...rest }) {
     console.log('route', isAuthenticated);
     return (
         <Route {...rest} render={props => (
-            isAuthenticated === true ? <Redirect to='/' /> : <Component {...props} />
+            isAuthenticated === true ? <Redirect to='/dashboard/root' /> : <Component {...props} />
         )} />
     )
 }

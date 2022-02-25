@@ -31,19 +31,12 @@ function App() {
 
   return (
     loading ? <LoadingPage /> : (
-      <TransitionGroup>
-        <CSSTransition
-          key={location.pathname}
-          classNames="fade"
-          timeout={300}
-        >
-          <Switch location={location}>
-            <PrivateRoute exact path='/' component={DashBoard} isAuthenticated={isAuthenticated} />
-            <PublicRoute path='/registration' component={SignUp} isAuthenticated={isAuthenticated} />
-            <PublicRoute path='/login' component={SignIn} isAuthenticated={isAuthenticated} />
-          </Switch>
-        </CSSTransition>
-      </TransitionGroup>
+      <Switch location={location}>
+        <PrivateRoute exact path='/dashboard/:id' component={DashBoard} isAuthenticated={isAuthenticated} />
+        <PublicRoute path='/registration' component={SignUp} isAuthenticated={isAuthenticated} />
+        <PublicRoute path='/login' component={SignIn} isAuthenticated={isAuthenticated} />
+      </Switch>
+
     )
   );
 }

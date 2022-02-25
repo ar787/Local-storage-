@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { db, auth } from '../../../firebase-config/firebase-config'
 import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
 import { Box, CircularProgress } from '@mui/material'
@@ -9,7 +9,7 @@ import Header from '../Header'
 
 function Content() {
     const history = useHistory()
-    const location = useLocation()
+    const params = useParams()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
 
@@ -25,19 +25,14 @@ function Content() {
     }
 
     function onFolderClick(id) {
-        history.push({
-            pathname: location.pathname,
-            search: `id=${id}`,
-        })
+        history.push(`/dashboard/${id}`)
     }
 
     useEffect(() => {
-        const urlSearchParams = new URLSearchParams(location.search)
-        const parentId = urlSearchParams.get('id') ?? '/'
         const q = query(
             collection(db, `main/${auth.currentUser.uid}/folders`),
             orderBy('createdAt', 'asc'),
-            where('parentId', '==', String(parentId))
+            where('parentId', '==', String(params.id))
         )
 
         setLoading(true)
@@ -55,10 +50,10 @@ function Content() {
 
         return unsubscribe
 
-    }, [location.search])
+    }, [params.id])
 
     return (
-        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', minWidth: 'calc(100vw - 236px - 315px)' }}>
+        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', maxWidth: 'calc(100vw - 236px)', flexGrow: '1' }}>
             <Header style={{ paddingTop: 33 }} />
             <Box className='mt-8 overflow-scroll'>
                 {
