@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Switch, useLocation } from 'react-router-dom'
 import { PublicRoute, PrivateRoute } from './routes/routesType'
-import { TransitionGroup, CSSTransition } from 'react-transition-group'
+// import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import SignUp from './components/views/sign-up/signUp'
 import SignIn from './components/views/sign-in/siginIn'
 import DashBoard from './components/views/dash-board/DashBoard'

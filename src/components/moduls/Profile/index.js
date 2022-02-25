@@ -2,7 +2,6 @@ import React from 'react'
 import { Box, Stack, Avatar, Typography, SvgIcon, Button, IconButton, Drawer } from '@mui/material'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import FolderIcon from '@mui/icons-material/Folder'
-import { useMediaQuery } from '@mui/material'
 import { ReactComponent as ImageIcon } from '../../../icons/image.svg'
 import { ReactComponent as DocumentIcon } from '../../../icons/document.svg'
 import { ReactComponent as OtherIcon } from '../../../icons/other.svg'
@@ -11,8 +10,6 @@ import { getAuth, signOut } from 'firebase/auth';
 // import Toast from '../../elements/toast/toast'
 
 function Profile() {
-    const matches = useMediaQuery('(max-width: 1200px)')
-
     const currentUser = getAuth().currentUser
     // const fileOpenRef = useRef()
     const userDisplayName = currentUser.displayName ?? localStorage.getItem('username')
@@ -63,9 +60,9 @@ function Profile() {
     return (
         <Drawer
             anchor='right'
-            open={!matches}
+            open
             variant='persistent'
-            sx={!matches ? { width: '315px' } : { width: '0px' }}
+            sx={{ display: { xs: 'none', md: 'block' }, width: '315px' }}
         >
             <Box sx={{ paddingTop: '33px', paddingLeft: '17px', border: '1px solid #F0F0F0' }}>
                 <Stack direction='row' justifyContent='start' alignItems='center' >
