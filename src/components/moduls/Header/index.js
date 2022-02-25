@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Button, Stack, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined'
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { BasicFormModal } from '../modals/index'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../../../firebase-config/firebase-config'
@@ -28,12 +28,12 @@ function Header({ style }) {
                     variant='contained'
                     size='large'
                     onClick={() => setCreateFolderModal(true)}
-                    startIcon={<AddIcon />}
+                    startIcon={<CreateNewFolderIcon />}
                     sx={{
                         textTransform: 'none',
                         boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
                     }}>
-                    Create Drive
+                    Create Folder
                 </Button>
             </Stack>
             <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ marginTop: '24px' }}>

@@ -34,8 +34,13 @@ function Content() {
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(location.search)
         const parentId = urlSearchParams.get('id') ?? '/'
+        const q = query(
+            collection(db, `main/${auth.currentUser.uid}/folders`),
+            orderBy('createdAt', 'asc'),
+            where('parentId', '==', String(parentId))
+        )
+
         setLoading(true)
-        const q = query(collection(db, `main/${auth.currentUser.uid}/folders`), orderBy('createdAt', 'asc'), where('parentId', '==', String(parentId)))
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const promises = querySnapshot.docs.map(async doc => {
@@ -53,9 +58,9 @@ function Content() {
     }, [location.search])
 
     return (
-        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', width: 'calc(100vw - 400px - 236px)' }}>
+        <Box sx={{ paddingLeft: '36px', paddingRight: '34px', minWidth: 'calc(100vw - 236px - 315px)' }}>
             <Header style={{ paddingTop: 33 }} />
-            <Box className='mt-8'>
+            <Box className='mt-8 overflow-scroll'>
                 {
                     loading && (
                         <Box className='flex justify-center items-center' sx={{ height: 'calc(100vh - 157.35px - 18px - 33px)' }}>
