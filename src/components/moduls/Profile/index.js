@@ -62,7 +62,7 @@ function Profile() {
             anchor='right'
             open
             variant='persistent'
-            sx={{ display: { xs: 'none', md: 'block' }, width: '315px' }}
+            sx={{ display: { xs: 'none', lg: 'block' }, width: '315px' }}
         >
             <Box sx={{ paddingTop: '33px', paddingLeft: '17px', border: '1px solid #F0F0F0' }}>
                 <Stack direction='row' justifyContent='start' alignItems='center' >
