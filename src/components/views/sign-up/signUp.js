@@ -87,7 +87,7 @@ function SignUp() {
                 parentId: '/',
                 name: 'untitled',
             })
-
+            await setDoc(doc(collection(db, `main/${user.uid}/documents`)))
 
         } catch (e) {
             const setStateByErrorCode = e.code === 'auth/weak-password' ? 'password' : 'email'
