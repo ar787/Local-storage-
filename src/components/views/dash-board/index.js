@@ -1,9 +1,9 @@
 import { Container, Stack } from '@mui/material'
 // import { signOut } from 'firebase/auth'
 import React from 'react'
-import MainContent from '../../moduls/MainContent/mainContent'
-import DrawerMenu from '../../moduls/Drawer'
-import Profile from '../../moduls/Profile'
+import MainContent from '../../moduls/main-content'
+import DrawerMenu from '../../moduls/drawer'
+import Profile from '../../moduls/profile'
 
 function DashBoard() {
     return (

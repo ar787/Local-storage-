@@ -5,7 +5,7 @@ import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase
 import { Box, CircularProgress, Grid } from '@mui/material'
 
 import FolderCard from '../../elements/FolderCard/folderCard'
-import Header from '../Header'
+import Header from '../header'
 import DocumentCard from '../../elements/DocumentCard'
 
 function Content() {
