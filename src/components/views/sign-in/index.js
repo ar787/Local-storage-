@@ -12,7 +12,7 @@ import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { ReactComponent as CustomGoogleIcon } from '../../../icons/google.svg';
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, setDoc, doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../../../firebase-config/firebase-config'
+import { auth, db } from '../../../firebase-config'
 import Toast from '../../elements/toast/toast';
 
 const CreateAccountButton = styled(Button)({

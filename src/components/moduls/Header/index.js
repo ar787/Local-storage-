@@ -9,7 +9,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'
 import UploadIcon from '@mui/icons-material/Upload';
 
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { db, auth } from '../../../firebase-config/firebase-config'
+import { db, auth } from '../../../firebase-config'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { BasicFormModal } from '../modals/index'
 import AddButton from './add-button'

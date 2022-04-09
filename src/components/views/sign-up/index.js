@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { collection, setDoc, doc } from 'firebase/firestore';
-import { auth, db } from '../../../firebase-config/firebase-config'
+import { auth, db } from '../../../firebase-config'
 
 const CreateAccountButton = styled(Button)({
     textTransform: 'capitalize',

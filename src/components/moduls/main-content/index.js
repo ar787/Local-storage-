@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { db, auth } from '../../../firebase-config/firebase-config'
 import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
 import { Box, CircularProgress, Grid } from '@mui/material'
 import cx from 'classnames'
 
-import FolderCard from '../../elements/FolderCard/folderCard'
-import Header from '../header'
-import DocumentCard from '../../elements/DocumentCard'
+import { db, auth } from 'firebase-config'
+import Header from 'components/moduls/header'
+import FolderCard from 'components/elements/FolderCard'
+import DocumentCard from 'components/elements/DocumentCard'
+
 
 function Content() {
     const history = useHistory()
@@ -112,7 +113,7 @@ function Content() {
                         documents.data.map(item => {
                             return <Grid key={item.id} item xs={12} md={4} lg={3}>
                                 <DocumentCard
-                                    className='m-4 pt-6 px-11 pb-3 rounded-lg cursor-pointer hover:bg-gray-50 transition'
+                                    className={cx('m-4 pt-6 px-11 pb-3 rounded-lg cursor-pointer hover:bg-gray-50 transition')}
                                     style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)' }}
                                     text={item.name}
                                     onClick={() => window.open(item.downloadUrl)}
