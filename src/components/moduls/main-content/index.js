@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import { db, auth } from '../../../firebase-config/firebase-config'
 import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
 import { Box, CircularProgress, Grid } from '@mui/material'
+import cx from 'classnames'
 
 import FolderCard from '../../elements/FolderCard/folderCard'
 import Header from '../header'
@@ -11,8 +12,9 @@ import DocumentCard from '../../elements/DocumentCard'
 function Content() {
     const history = useHistory()
     const params = useParams()
-    const [folders, setFolders] = useState({ data: [], loading: false, error: null })
-    const [documents, setDocuments] = useState({ data: [], loading: false, error: null })
+    const [folders, setFolders] = useState({ data: [], loading: null, error: null })
+    const [documents, setDocuments] = useState({ data: [], loading: null, error: null })
+    const isEmpty = !folders.data.length && !documents.data.length && folders.loading === false && documents.loading === false
 
     async function getFolderItemsCount(parentId) {
         const queryFolder = query(
@@ -80,7 +82,7 @@ function Content() {
     return (
         <Box sx={{ paddingLeft: '36px', paddingRight: '34px', maxWidth: 'calc(100vw - 236px)', flexGrow: '1' }}>
             <Header style={{ paddingTop: 33 }} />
-            <Grid container direction='row' className='mt-8 overflow-scroll'>
+            <Grid container direction='row' className={cx('overflow-scroll', { 'mt-8': !isEmpty })}>
                 {
                     folders.loading && documents.loading && (
                         <Box className='flex w-full justify-center items-center' sx={{ height: 'calc(100vh - 157.35px - 18px - 33px)' }}>
@@ -120,7 +122,20 @@ function Content() {
                     )
                 }
             </Grid>
-        </Box >
+            {
+                isEmpty &&
+                (
+                    <Box style={{ height: 'calc(100vh - 157.34px)' }}>
+                        <p
+                            className='text-center text-lg'
+                            style={{ lineHeight: 'calc(100vh - 157.34px)' }}
+                        >
+                            This folder dosn't have item
+                        </p>
+                    </Box>
+                )
+            }
+        </Box>
     )
 }
 
