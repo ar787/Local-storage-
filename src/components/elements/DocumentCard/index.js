@@ -1,12 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Box, Typography } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
 import cx from 'classnames'
-import ArticleIcon from '@mui/icons-material/Article'
+import byteSize from 'byte-size'
 
-const DocumentCard = React.forwardRef(({ text, onClick, className, style }, ref) => (
-    <Box ref={ref} className={cx('flex flex-col justify-center items-center min-w-0', className)} style={style} onClick={onClick}>
-        <ArticleIcon sx={{ fontSize: '100px' }} />
+import { getImageNameByContentType } from 'utils'
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
+const DocumentCard = React.forwardRef(({ text, onClick, className, style, type, size }, ref) => (
+    <Box ref={ref} className={cx('flex flex-col justify-start items-start min-w-0', className)} style={style} onClick={onClick}>
+        <Box className='flex items-center justify-between w-full mb-3'>
+            <Box className='flex-grow'>
+                <img src={require(`icons/document-icons/${getImageNameByContentType(type)}.png`).default} alt='document' />
+            </Box>
+            <IconButton style={{ alignSelf: 'start' }}>
+                <MoreVertIcon />
+            </IconButton>
+        </Box>
         <Typography sx={{
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -14,16 +24,29 @@ const DocumentCard = React.forwardRef(({ text, onClick, className, style }, ref)
             maxWidth: '100%'
         }}
             fontWeight={500}
-            color={'rgba(0, 0, 0, 0.85)'}
+            color={'rgba(0, 0, 0, 0.45)'}
         >
             {text}
+        </Typography>
+        <Typography sx={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            maxWidth: '100%',
+            fontWeight: '700',
+        }}
+            fontWeight={500}
+            color={'rgba(0, 0, 0, 0.45)'}
+        >
+            {byteSize(size).toString()}
         </Typography>
     </Box>
 ))
 
-DocumentCard.propType = {
+DocumentCard.propTypes = {
     text: PropTypes.string,
     className: PropTypes.string,
+    type: PropTypes.string,
     itemsLength: PropTypes.number,
     style: PropTypes.object,
     onClick: PropTypes.func

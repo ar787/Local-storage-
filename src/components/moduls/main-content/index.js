@@ -9,7 +9,6 @@ import Header from 'components/moduls/header'
 import FolderCard from 'components/elements/FolderCard'
 import DocumentCard from 'components/elements/DocumentCard'
 
-
 function Content() {
     const history = useHistory()
     const params = useParams()
@@ -113,10 +112,12 @@ function Content() {
                         documents.data.map(item => {
                             return <Grid key={item.id} item xs={12} md={4} lg={3}>
                                 <DocumentCard
-                                    className={cx('m-4 pt-6 px-11 pb-3 rounded-lg cursor-pointer hover:bg-gray-50 transition')}
-                                    style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)' }}
+                                    // pt-6 pb-3
+                                    className={cx('m-4 pl-4 rounded-lg')}
+                                    style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)', height: 184 }}
                                     text={item.name}
-                                    onClick={() => window.open(item.downloadUrl)}
+                                    // onClick={() => window.open(item.downloadUrl)}
+                                    {...item}
                                 />
                             </Grid>
                         })
