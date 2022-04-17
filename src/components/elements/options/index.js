@@ -4,7 +4,7 @@ import { Menu, MenuItem, ListItemIcon, Button } from '@mui/material'
 import { AddCircleRounded } from '@mui/icons-material'
 
 
-function AddButton({ options }) {
+function Options({ options, renderButton }) {
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
 
@@ -14,14 +14,14 @@ function AddButton({ options }) {
     function handleClose() {
         setAnchorEl(null);
     }
-    function handleClick(onClick) {
-        onClick()
+    function handleClick(el) {
+        el.onClick(el)
         handleClose()
     }
 
     return (
         <>
-            <Button
+            {/* <Button
                 variant='contained'
                 onClick={handleOpen}
                 size='large'
@@ -31,7 +31,8 @@ function AddButton({ options }) {
                     boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
                 }}>
                 Create
-            </Button>
+            </Button> */}
+            {renderButton(handleOpen)}
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -52,7 +53,7 @@ function AddButton({ options }) {
                 }}
             >
                 {options.map((el, index) =>
-                    <MenuItem key={index} onClick={() => handleClick(el.onClick)}>
+                    <MenuItem key={index} onClick={() => handleClick(el)}>
                         <ListItemIcon>
                             {el.icon}
                         </ListItemIcon>
@@ -60,19 +61,12 @@ function AddButton({ options }) {
                     </MenuItem>
                 )}
             </Menu>
-            {/* <input
-                ref={inputRef}
-                type='file'
-                accept='.png, .jpg, .doc, .xml'
-                style={{ display: 'none' }}
-                onChange={handleUploadFile}
-            /> */}
         </>
     )
 }
 
-AddButton.propTypes = {
-    options: PropTypes.arrayOf(PropTypes.object),
+Options.propTypes = {
+    options: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default AddButton
+export default Options

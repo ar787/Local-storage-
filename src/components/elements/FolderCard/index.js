@@ -6,7 +6,7 @@ import cx from 'classnames'
 
 function FolderCard({ text, onClick, itemsLength, className, style }) {
     return (
-        <Box className={cx('flex flex-col justify-center items-center', className)} style={style} onClick={onClick}>
+        <Box id='doc' className={cx('flex flex-col justify-center items-center', className)} style={style} onClick={onClick}>
             <FolderIcon sx={{ fontSize: '100px' }} />
             <Typography variant='body' fontWeight={500} color={'rgba(0, 0, 0, 0.85)'} textAlign='center'>
                 {text}

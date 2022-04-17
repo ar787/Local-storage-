@@ -1,18 +1,18 @@
 import React, { useState, useRef, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
-import { Box, Stack, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
+import { Box, Stack, Typography, TextField, InputAdornment, IconButton, Button } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined'
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'
-import UploadIcon from '@mui/icons-material/Upload';
+import { UploadRounded, AddCircleRounded } from '@mui/icons-material';
 
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { db, auth } from '../../../firebase-config'
+import { db, auth } from 'firebase-config'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { BasicFormModal } from '../modals/index'
-import AddButton from './add-button'
+import Options from 'components/elements/options'
 
 function Header({ style }) {
     const params = useParams()
@@ -25,7 +25,7 @@ function Header({ style }) {
         },
         {
             text: 'Upload file',
-            icon: <UploadIcon />,
+            icon: <UploadRounded />,
             onClick: () => { inputRef.current.click() }
         },
     ], [])
@@ -63,19 +63,19 @@ function Header({ style }) {
                 },
                 (error) => {
                     console.log(error)
+                    rej(error)
                 },
                 () => {
                     // console.log('res', res)
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                        console.log('File available at', downloadURL);
+                        // console.log('File available at', downloadURL);
                         addDocumentsIntoFirestore(file.name, file.type, downloadURL, file.size).then(() => {
-                            res(downloadURL)
-                        }).catch((e) => rej(e))
-                    });
-                }
-            )
+                            // res(downloadURL)
+                        })
+                        res('ok')
+                    }).catch((e) => rej(e))
+                });
         })
-
     }
     function handleUploadFile(e) {
         const files = e.target.files
@@ -88,7 +88,22 @@ function Header({ style }) {
         <Box style={style}>
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
                 <Typography variant='h1' fontSize={38} fontWeight={500}>My Drive</Typography>
-                <AddButton options={options} />
+                <Options
+                    options={options}
+                    renderButton={(onClick) => {
+                        return <Button
+                            variant='contained'
+                            onClick={onClick}
+                            size='large'
+                            startIcon={<AddCircleRounded />}
+                            sx={{
+                                textTransform: 'none',
+                                boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
+                            }}>
+                            Create
+                        </Button>
+                    }}
+                />
                 <input
                     ref={inputRef}
                     type='file'

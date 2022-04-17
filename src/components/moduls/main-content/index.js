@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
 import { Box, CircularProgress, Grid } from '@mui/material'
+import DownloadIcon from '@mui/icons-material/Download';
 import cx from 'classnames'
+import { saveAs } from 'file-saver';
+
+// import { getStorage, ref, getDownloadURL } from 'firebase/storage'
 
 import { db, auth } from 'firebase-config'
 import Header from 'components/moduls/header'
 import FolderCard from 'components/elements/FolderCard'
 import DocumentCard from 'components/elements/DocumentCard'
+import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 
 function Content() {
     const history = useHistory()
@@ -15,7 +20,29 @@ function Content() {
     const [folders, setFolders] = useState({ data: [], loading: null, error: null })
     const [documents, setDocuments] = useState({ data: [], loading: null, error: null })
     const isEmpty = !folders.data.length && !documents.data.length && folders.loading === false && documents.loading === false
+    const options = useMemo(() => [
+        {
+            text: 'Download',
+            icon: <DownloadIcon />,
+            onClick: (el) => {
+                const storage = getStorage()
+                const storageRef = ref(storage, `users/${auth.currentUser.uid}/${el.fileName}`)
+                getDownloadURL(storageRef).then(url => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.responseType = 'blob';
+                    xhr.onload = (event) => {
+                        const blob = xhr.response;
+                        console.log(blob);
+                        saveAs(blob, 'ddd')
+                    };
+                    xhr.open('GET', url);
+                    xhr.setRequestHeader('X-PINGOTHER', 'pingpong');
+                    xhr.send();
 
+                })
+            }
+        }
+    ], [])
     async function getFolderItemsCount(parentId) {
         const queryFolder = query(
             collection(db, `main/${auth.currentUser.uid}/folders`),
@@ -111,14 +138,16 @@ function Content() {
                     !documents.loading && !folders.loading && (
                         documents.data.map(item => {
                             return <Grid key={item.id} item xs={12} md={4} lg={3}>
+                                {/* <a href={item.downloadUrl} download> */}
                                 <DocumentCard
-                                    // pt-6 pb-3
                                     className={cx('m-4 pl-4 rounded-lg')}
                                     style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)', height: 184 }}
                                     text={item.name}
+                                    options={options.map(el => ({ ...el, fileName: item.name, downloadUrl: item.downloadUrl }))}
                                     // onClick={() => window.open(item.downloadUrl)}
                                     {...item}
                                 />
+                                {/* </a> */}
                             </Grid>
                         })
                     )
