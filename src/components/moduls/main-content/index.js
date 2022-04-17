@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { collection, getDocs, where, query, onSnapshot, orderBy } from 'firebase/firestore'
 import { Box, CircularProgress, Grid } from '@mui/material'
-import DownloadIcon from '@mui/icons-material/Download';
+import { Download, Delete } from '@mui/icons-material'
 import cx from 'classnames'
 import { saveAs } from 'file-saver';
 
@@ -12,7 +12,8 @@ import { db, auth } from 'firebase-config'
 import Header from 'components/moduls/header'
 import FolderCard from 'components/elements/FolderCard'
 import DocumentCard from 'components/elements/DocumentCard'
-import { getDownloadURL, getStorage, ref } from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, deleteObject } from 'firebase/storage'
+import { doc, deleteDoc } from 'firebase/firestore'
 
 function Content() {
     const history = useHistory()
@@ -23,7 +24,7 @@ function Content() {
     const options = useMemo(() => [
         {
             text: 'Download',
-            icon: <DownloadIcon />,
+            icon: <Download />,
             onClick: (el) => {
                 const storage = getStorage()
                 const storageRef = ref(storage, `users/${auth.currentUser.uid}/${el.fileName}`)
@@ -40,6 +41,23 @@ function Content() {
                     xhr.send();
 
                 })
+            }
+        },
+        {
+            text: 'Archive',
+            textColor: 'red',
+            icon: <Delete color='error' />,
+            onClick: async (el) => {
+                const storage = getStorage()
+                const storageRef = ref(storage, `users/${auth.currentUser.uid}/${el.fileName}`)
+
+                try {
+                    await deleteObject(storageRef)
+                    await deleteDoc(doc(db, `main/${auth.currentUser.uid}/documents/${el.id}`))
+                } catch (error) {
+                    console.error(error)
+                }
+
             }
         }
     ], [])
@@ -143,7 +161,7 @@ function Content() {
                                     className={cx('m-4 pl-4 rounded-lg')}
                                     style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)', height: 184 }}
                                     text={item.name}
-                                    options={options.map(el => ({ ...el, fileName: item.name, downloadUrl: item.downloadUrl }))}
+                                    options={options.map(el => ({ ...el, id: item.id, fileName: item.name, downloadUrl: item.downloadUrl }))}
                                     // onClick={() => window.open(item.downloadUrl)}
                                     {...item}
                                 />

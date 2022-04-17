@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Menu, MenuItem, ListItemIcon, Button } from '@mui/material'
-import { AddCircleRounded } from '@mui/icons-material'
+import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
 
 
 function Options({ options, renderButton }) {
@@ -57,7 +56,7 @@ function Options({ options, renderButton }) {
                         <ListItemIcon>
                             {el.icon}
                         </ListItemIcon>
-                        {el.text}
+                        <ListItemText sx={{ color: el.textColor }}>{el.text}</ListItemText>
                     </MenuItem>
                 )}
             </Menu>
