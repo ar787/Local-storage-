@@ -5,6 +5,8 @@ import { Box, CircularProgress, Grid } from '@mui/material'
 import { Download, Delete } from '@mui/icons-material'
 import cx from 'classnames'
 import { saveAs } from 'file-saver';
+import { getDownloadURL, getStorage, ref, deleteObject } from 'firebase/storage'
+import { doc, deleteDoc } from 'firebase/firestore'
 
 // import { getStorage, ref, getDownloadURL } from 'firebase/storage'
 
@@ -12,8 +14,6 @@ import { db, auth } from 'firebase-config'
 import Header from 'components/moduls/header'
 import FolderCard from 'components/elements/FolderCard'
 import DocumentCard from 'components/elements/DocumentCard'
-import { getDownloadURL, getStorage, ref, deleteObject } from 'firebase/storage'
-import { doc, deleteDoc } from 'firebase/firestore'
 
 function Content() {
     const history = useHistory()

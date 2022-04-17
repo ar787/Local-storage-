@@ -9,6 +9,8 @@ import { auth } from 'firebase-config'
 import LoadingPage from 'components/elements/loading-page'
 
 import './App.css'
+import { Route } from 'react-router-dom'
+import { Redirect } from 'react-router-dom/cjs/react-router-dom.min'
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false)
@@ -31,6 +33,7 @@ function App() {
   return (
     loading ? <LoadingPage /> : (
       <Switch location={location}>
+        <Route exact path='/' render={() => isAuthenticated ? <Redirect to='/dashboard/root' /> : <Redirect to='/login' />} />
         <PrivateRoute exact path='/dashboard/:id' component={DashBoard} isAuthenticated={isAuthenticated} />
         <PublicRoute path='/registration' component={SignUp} isAuthenticated={isAuthenticated} />
         <PublicRoute path='/login' component={SignIn} isAuthenticated={isAuthenticated} />
