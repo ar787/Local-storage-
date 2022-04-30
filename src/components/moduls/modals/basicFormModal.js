@@ -1,7 +1,7 @@
 import PropTypes from "prop-types"
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import ReactDOM from 'react-dom'
-import { Modal, Fade, Box, Button, Typography, TextField } from '@mui/material'
+import { Modal, Fade, Box, Button, Typography, TextField, CircularProgress } from '@mui/material'
 import { withStyles } from '@mui/styles'
 
 const CustomButton = withStyles({
@@ -24,26 +24,49 @@ const style = {
     bgcolor: 'background.paper',
 }
 
-function BasicFormModal({ open, onClose, title, autoFocus, onSubmit }) {
+function BasicFormModal({ open, onClose, title, placeholder, autoFocus, onSubmit, submitButtonText }) {
     const [value, setValue] = useState('')
+    const [error, setError] = useState('')
+    const [disabled, setDisabled] = useState(!value)
+    const [loading, setLoading] = useState(false)
 
-    function onclose() {
-        onClose()
-        setValue('')
-    }
+    const getError = useCallback(error => {
+        switch (error.code) {
+            case 'auth/user-not-found':
+                return 'Email not found'
+            case 'auth/invalid-email':
+                return 'Invalid email'
+            default:
+                return '';
+        }
+    }, [])
 
     async function onHandleSubmit(value) {
         try {
+            setLoading(true)
             await onSubmit(value)
-            onclose()
+            setLoading(false)
+            onClose()
         } catch (error) {
-            console.log('BasicFormModal', error)
+            setError(getError(error))
+            setLoading(false)
+            console.log(error)
         }
+    }
+
+    function onChange(e) {
+        if (e.target.value.trim().length === 0) {
+            setDisabled(true)
+        } else {
+            setDisabled(false)
+        }
+        setValue(e.target.value)
+        setError('')
     }
 
     return (
         ReactDOM.createPortal(
-            <Modal open={open} onClose={onclose}>
+            <Modal open={open} onClose={onClose}>
                 <Fade in={open}>
                     <Box sx={style} className='w-96 px-5 pt-6 rounded-lg'>
                         <Typography
@@ -54,11 +77,15 @@ function BasicFormModal({ open, onClose, title, autoFocus, onSubmit }) {
                             {title}
                         </Typography>
                         <TextField
+                            value={value}
                             variant='outlined'
                             margin='dense'
                             autoFocus={autoFocus}
-                            onChange={e => setValue(e.target.value)}
+                            onChange={onChange}
+                            placeholder={placeholder}
                             fullWidth
+                            error={!!error}
+                            helperText={!!error ? error : ' '}
                             InputProps={{
                                 sx: {
                                     borderRadius: '6px'
@@ -72,7 +99,14 @@ function BasicFormModal({ open, onClose, title, autoFocus, onSubmit }) {
                             }} />
                         <Box className='flex justify-end items-center py-2'>
                             <CustomButton pcolor='#000' onClick={onClose}>Cancel</CustomButton>
-                            <CustomButton onClick={() => onHandleSubmit(value)}>Create</CustomButton>
+                            {
+                                loading ?
+                                    <Box className='flex justify-center items-center' sx={{ width: '64px' }}>
+                                        <CircularProgress size={25} />
+                                    </Box>
+                                    :
+                                    <CustomButton disabled={disabled} onClick={() => onHandleSubmit(value)}>{submitButtonText}</CustomButton>
+                            }
                         </Box>
                     </Box>
                 </Fade>
@@ -85,6 +119,8 @@ BasicFormModal.propTypes = {
     open: PropTypes.bool,
     autoFocus: PropTypes.bool,
     title: PropTypes.string,
+    placeholder: PropTypes.string,
+    submitButtonText: PropTypes.string,
     onClose: PropTypes.func,
     onSubmit: PropTypes.func,
 }
@@ -93,6 +129,8 @@ BasicFormModal.defaultProps = {
     open: false,
     autoFocus: false,
     title: '',
+    placeholder: '',
+    submitButtonText: 'Create',
     onClose: () => { },
     onSubmit: () => { },
 }

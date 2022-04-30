@@ -12,8 +12,10 @@ import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import { ReactComponent as CustomGoogleIcon } from '../../../icons/google.svg';
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, setDoc, doc, getDoc } from 'firebase/firestore';
+import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth, db } from '../../../firebase-config'
 import Toast from '../../elements/toast/toast';
+import { BasicFormModal } from 'components/moduls/modals';
 
 const CreateAccountButton = styled(Button)({
     textTransform: 'capitalize',
@@ -50,6 +52,7 @@ function SignIn() {
         showPassword: false,
     })
     const [showErrorMessage, setShowErrorMessage] = useState({ open: false, message: '', type: 'success' })
+    const [openForgotPasswordModal, setOpenForgotPasswordModal] = useState(false)
     const matches = useMediaQuery('(max-width:908px)');
     function handleClickShowPassword() {
         setUserInfo(prev => ({ ...prev, showPassword: !prev.showPassword }))
@@ -276,7 +279,13 @@ function SignIn() {
                                     LogIn
                                 </CreateAccountButton>
                                 <Link to='/registration'>Registeration</Link>
-                                <Typography textAlign='left'> Forgot password? </Typography>
+                                {/* <Typography textAlign='left'> Forgot password? </Typography> */}
+                                <Button
+                                    sx={{ textTransform: 'none', }}
+                                    onClick={() => setOpenForgotPasswordModal(true)}
+                                >
+                                    Forgot password?
+                                </Button>
                             </Box>
                         </Stack>
                     </Stack>
@@ -287,6 +296,16 @@ function SignIn() {
                 onClose={() => setShowErrorMessage({ open: false, message: '', type: '' })}
                 message={showErrorMessage.message}
                 type={showErrorMessage.type}
+            />
+            <BasicFormModal
+                key={openForgotPasswordModal}
+                open={openForgotPasswordModal}
+                onClose={() => setOpenForgotPasswordModal(false)}
+                title='Forgot password?'
+                placeholder='example@mail.com'
+                autoFocus
+                onSubmit={email => sendPasswordResetEmail(auth, email)}
+                submitButtonText='Send'
             />
         </Container >
     )
