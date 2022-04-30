@@ -122,7 +122,7 @@ function Header({ style }) {
                             marginX: '5px',
 
                         }}>
-                        upload
+                        Upload
                     </Button>
                     <Options options={options} renderButton={(onClick) => {
                         return <IconButton onClick={onClick}>

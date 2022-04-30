@@ -21,7 +21,7 @@ function Content() {
     const [folders, setFolders] = useState({ data: [], loading: null, error: null })
     const [documents, setDocuments] = useState({ data: [], loading: null, error: null })
     const isEmpty = !folders.data.length && !documents.data.length && folders.loading === false && documents.loading === false
-    const options = useMemo(() => [
+    const optionsForDocument = useMemo(() => [
         {
             text: 'Download',
             icon: <Download />,
@@ -44,7 +44,7 @@ function Content() {
             }
         },
         {
-            text: 'Archive',
+            text: 'Remove',
             textColor: 'red',
             icon: <Delete color='error' />,
             onClick: async (el) => {
@@ -58,6 +58,21 @@ function Content() {
                     console.error(error)
                 }
 
+            }
+        }
+    ], [])
+    const optionsForFolder = useMemo(() => [
+        {
+            text: 'Remove',
+            textColor: 'red',
+            icon: <Delete color='error' />,
+            onClick: async (el) => {
+                try {
+                    console.log(el)
+                    await deleteDoc(doc(db, `main/${auth.currentUser.uid}/folders/${el.id}`))
+                } catch (error) {
+                    console.error(error)
+                }
             }
         }
     ], [])
@@ -146,6 +161,7 @@ function Content() {
                                     text={item.name}
                                     itemsLength={item.itemsCount}
                                     onClick={() => onFolderClick(item.id)}
+                                    options={optionsForFolder.map(el => ({ ...el, id: item.id }))}
                                 />
                             </Grid>
                         })
@@ -161,7 +177,7 @@ function Content() {
                                     className={cx('m-4 pl-4 rounded-lg')}
                                     style={{ boxShadow: '0px 2px 12px rgba(98, 111, 159, 0.12)', height: 184 }}
                                     text={item.name}
-                                    options={options.map(el => ({ ...el, id: item.id, fileName: item.name, downloadUrl: item.downloadUrl }))}
+                                    options={optionsForDocument.map(el => ({ ...el, id: item.id, fileName: item.name, downloadUrl: item.downloadUrl }))}
                                     // onClick={() => window.open(item.downloadUrl)}
                                     {...item}
                                 />
