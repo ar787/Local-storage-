@@ -167,6 +167,7 @@ function Header({ style }) {
             </Stack>
             <BasicFormModal
                 open={openCreateFolderModal}
+                key={openCreateFolderModal}
                 onClose={() => setCreateFolderModal(false)}
                 title='New folder'
                 autoFocus
