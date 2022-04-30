@@ -5,7 +5,8 @@ import FolderIcon from '@mui/icons-material/Folder'
 import { ReactComponent as ImageIcon } from '../../../icons/image.svg'
 import { ReactComponent as DocumentIcon } from '../../../icons/document.svg'
 import { ReactComponent as OtherIcon } from '../../../icons/other.svg'
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { stringToColor } from 'utils'
 // import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 // import Toast from '../../elements/toast/toast'
 
@@ -21,20 +22,7 @@ function Profile() {
             lastName: fullName.length !== 1 ? fullName[1] : ['']
         }
     }
-    function stringToColor(string) {
-        let i, hash = 0;
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
 
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.substr(-2);
-        }
-        return color;
-    }
     // function handleUploadPhoto(e) {
     //     const storage = getStorage()
     //     const storageRef = ref(storage, 'profile-images/image')
@@ -77,7 +65,6 @@ function Profile() {
                             className='cursor-pointer'
                             onClick={() => {
                                 // fileOpenRef.current.click()
-                                signOut(getAuth())
                             }}
                         >
                             Profile Setting

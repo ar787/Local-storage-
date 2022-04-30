@@ -1,35 +1,37 @@
 import React, { useState, useRef, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
-import { Box, Stack, Typography, TextField, InputAdornment, IconButton, Button } from '@mui/material'
+import { Box, Stack, Typography, TextField, InputAdornment, IconButton, Button, Avatar } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined'
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'
-import { UploadRounded, AddCircleRounded } from '@mui/icons-material';
-
+import { UploadRounded, CreateNewFolder, Logout, AccountCircle } from '@mui/icons-material';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from 'firebase-config'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+
 import { BasicFormModal } from '../modals/index'
 import Options from 'components/elements/options'
+import { signOut } from 'firebase/auth'
+import { stringToColor } from 'utils'
 
 function Header({ style }) {
     const params = useParams()
     const inputRef = useRef()
+    const [openCreateFolderModal, setCreateFolderModal] = useState(false)
+    const userDisplayName = auth.currentUser.displayName ?? localStorage.getItem('username')
     const options = useMemo(() => [
         {
-            text: 'Create Folder',
-            icon: <CreateNewFolderIcon />,
+            text: 'Profile',
+            icon: <AccountCircle />,
             onClick: () => setCreateFolderModal(true)
         },
         {
-            text: 'Upload file',
-            icon: <UploadRounded />,
-            onClick: () => { inputRef.current.click() }
+            text: 'Logout',
+            icon: <Logout />,
+            onClick: () => { signOut(auth) }
         },
     ], [])
-    const [openCreateFolderModal, setCreateFolderModal] = useState(false)
 
     async function createFolder(name) {
         await addDoc(collection(db, 'main', auth.currentUser.uid, 'folders'), {
@@ -84,26 +86,53 @@ function Header({ style }) {
             uploadImageAsPromise(files[i])
         }
     }
+
+    function displayName(string) {
+        const fullName = string.split(' ')
+        return {
+            firstName: fullName[0],
+            lastName: fullName.length !== 1 ? fullName[1] : ['']
+        }
+    }
+
     return (
         <Box style={style}>
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
                 <Typography variant='h1' fontSize={38} fontWeight={500}>My Drive</Typography>
-                <Options
-                    options={options}
-                    renderButton={(onClick) => {
-                        return <Button
-                            variant='contained'
-                            onClick={onClick}
-                            size='large'
-                            startIcon={<AddCircleRounded />}
-                            sx={{
-                                textTransform: 'none',
-                                boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
-                            }}>
-                            Create
-                        </Button>
-                    }}
-                />
+                <Box className='flex justify-center items-center'>
+                    <Button
+                        variant='contained'
+                        onClick={() => setCreateFolderModal(true)}
+                        size='large'
+                        startIcon={<CreateNewFolder />}
+                        sx={{
+                            textTransform: 'none',
+                            boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
+                        }}>
+                        New folder
+                    </Button>
+                    <Button
+                        variant='contained'
+                        onClick={() => inputRef.current.click()}
+                        size='large'
+                        startIcon={<UploadRounded />}
+                        sx={{
+                            textTransform: 'none',
+                            boxShadow: '0px 2px 0px rgba(0, 0, 0, 0.043)',
+                            marginX: '5px',
+
+                        }}>
+                        upload
+                    </Button>
+                    <Options options={options} renderButton={(onClick) => {
+                        return <IconButton onClick={onClick}>
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: stringToColor(userDisplayName) }}>
+                                {displayName(userDisplayName).firstName[0]}
+                            </Avatar>
+                        </IconButton>
+                    }} />
+
+                </Box>
                 <input
                     ref={inputRef}
                     type='file'

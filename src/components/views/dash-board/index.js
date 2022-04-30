@@ -1,9 +1,8 @@
 import { Container, Stack } from '@mui/material'
 // import { signOut } from 'firebase/auth'
 import React from 'react'
-import MainContent from '../../moduls/main-content'
-import DrawerMenu from '../../moduls/drawer'
-import Profile from '../../moduls/profile'
+import MainContent from 'components/moduls/main-content'
+import DrawerMenu from 'components/moduls/drawer'
 
 function DashBoard() {
     return (
@@ -11,7 +10,6 @@ function DashBoard() {
             <Stack direction='row' justifyContent='start' alignItems='start'>
                 <DrawerMenu />
                 <MainContent />
-                <Profile />
             </Stack>
         </Container>
     );
